@@ -75,9 +75,10 @@ const resolvers = {
         (await Author.findOne({ name: args.author })) ||
         (await new Author({ name: args.author }).save());
 
-      const book = new Book({ ...args, author: fAuthor._id });
-      const newBook = await book.save();
-      return newBook.populate("author");
+      const book = await new Book({ ...args, author: fAuthor._id }).populate(
+        "author"
+      );
+      return book.save();
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name: args.name });

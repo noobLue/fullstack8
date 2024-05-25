@@ -4,6 +4,7 @@ const { default: mongoose } = require("mongoose");
 const { v1: uuid } = require("uuid");
 const Book = require("./models/Book");
 const Author = require("./models/Author");
+const { GraphQLError } = require("graphql");
 
 require("dotenv").config();
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -71,19 +72,57 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
-      let fAuthor =
-        (await Author.findOne({ name: args.author })) ||
-        (await new Author({ name: args.author }).save());
+      let fAuthor = await Author.findOne({ name: args.author });
+
+      if (!fAuthor) {
+        try {
+          fAuthor = await new Author({ name: args.author }).save();
+        } catch (error) {
+          throw new GraphQLError("Invalid author name", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
+      }
 
       const book = await new Book({ ...args, author: fAuthor._id }).populate(
         "author"
       );
-      return book.save();
+
+      try {
+        await book.save();
+      } catch (error) {
+        throw new GraphQLError("Failed to add book", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+            error,
+          },
+        });
+      }
+
+      return book;
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name: args.name });
       author.born = args.born;
-      return author.save();
+
+      try {
+        await author.save();
+      } catch (error) {
+        throw new GraphQLError("Failed to change birthyear", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.born,
+            error,
+          },
+        });
+      }
+
+      return author;
     },
   },
 };

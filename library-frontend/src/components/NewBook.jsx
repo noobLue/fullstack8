@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from "../queries";

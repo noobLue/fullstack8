@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { gql } from "@apollo/client";
 
 export const ALL_AUTHORS = gql`

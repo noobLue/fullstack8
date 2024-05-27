@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { LOGIN } from "../queries";
 import { useMutation } from "@apollo/client";

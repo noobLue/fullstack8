@@ -41,10 +41,10 @@ const AuthorBirthYear = ({ authors }) => {
   );
 };
 
-const Authors = (props) => {
+const Authors = ({ show, loggedIn }) => {
   const authorsResult = useQuery(ALL_AUTHORS);
 
-  if (!props.show) {
+  if (!show) {
     return null;
   }
 
@@ -71,7 +71,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <AuthorBirthYear authors={authors}></AuthorBirthYear>
+      {loggedIn && <AuthorBirthYear authors={authors}></AuthorBirthYear>}
     </div>
   );
 };

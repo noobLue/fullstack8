@@ -45,6 +45,7 @@ const typeDefs = `
   type Query {
     bookCount: Int!
     personsCount: Int!
+    allGenres: [String]!
     allBooks(author: String, genre: String): [Book]!
     allAuthors: [Author]!
     me: User
@@ -55,7 +56,7 @@ const typeDefs = `
       title: String!
       author: String!
       published: Int!
-      genres: [String!]!
+      genres: [String]!
     ): Book
     editAuthor(
       name: String!
@@ -76,6 +77,16 @@ const resolvers = {
   Query: {
     bookCount: async () => Book.collection.countDocuments(),
     personsCount: () => Author.collection.countDocuments(),
+    allGenres: async (root, args) => {
+      const books = await Book.find({});
+      const genreList = books.reduce((acc, curr) => {
+        return acc.concat(curr.genres);
+      }, []);
+
+      return genreList.filter(
+        (genre, index, array) => array.indexOf(genre) === index
+      );
+    },
     allBooks: async (root, args) => {
       let obj = {};
       // obj.genres = { $all: [args.genre1, args.genre2] }; // For matching multiple genres

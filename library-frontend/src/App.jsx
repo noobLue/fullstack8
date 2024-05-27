@@ -53,13 +53,14 @@ const App = () => {
 
       <Authors show={page === "authors"} loggedIn={token !== null} />
 
-      <Books show={page === "books"} />
+      <Books show={page === "books"} client={client} />
 
       <NewBook show={page === "add"} />
 
       <Books
         show={page === "recommendations" && favoriteGenre}
         favoriteGenre={favoriteGenre}
+        client={client}
       />
 
       <LoginForm show={page === "login"} setToken={setToken} />

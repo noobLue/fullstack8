@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useQuery } from "@apollo/client";
 import { ALL_BOOKS } from "../queries";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const BookFilter = ({ filter, setFilter, genres }) => {
   const selectEvent = (e) => {
@@ -25,16 +25,21 @@ const BookFilter = ({ filter, setFilter, genres }) => {
   );
 };
 
-const Books = ({ show, favoriteGenre }) => {
+const Books = ({ show, favoriteGenre, client }) => {
   const [filter, setFilter] = useState("");
   const variables = {
     genre: favoriteGenre || (filter === "" ? undefined : filter),
   };
 
-  console.log(variables);
   const booksResult = useQuery(ALL_BOOKS, {
     variables,
   });
+
+  useEffect(() => {
+    client.refetchQueries({
+      include: [ALL_BOOKS],
+    });
+  }, [filter]);
 
   if (!show) {
     return null;

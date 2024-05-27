@@ -3,11 +3,13 @@ import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
+import { ME } from "./queries";
 
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(null);
+  const meResult = useQuery(ME); // TODO: reset state when token changes
   const client = useApolloClient();
 
   useEffect(() => {
@@ -15,13 +17,21 @@ const App = () => {
     setToken(t);
   }, []);
 
+  // Refetch ME query when token changes
+  useEffect(() => {
+    client.refetchQueries({
+      include: [ME],
+    });
+  }, [token]);
+
   const logout = () => {
     setToken(null);
     localStorage.clear();
     client.resetStore();
   };
 
-  console.log(token !== null);
+  const favoriteGenre =
+    meResult.data && meResult.data.me ? meResult.data.me.favoriteGenre : null;
 
   return (
     <div>
@@ -29,6 +39,11 @@ const App = () => {
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
         {token && <button onClick={() => setPage("add")}>add book</button>}
+        {token && (
+          <button onClick={() => setPage("recommendations")}>
+            recommendations
+          </button>
+        )}
         {token ? (
           <button onClick={logout}>logout</button>
         ) : (
@@ -41,6 +56,11 @@ const App = () => {
       <Books show={page === "books"} />
 
       <NewBook show={page === "add"} />
+
+      <Books
+        show={page === "recommendations" && favoriteGenre}
+        favoriteGenre={favoriteGenre}
+      />
 
       <LoginForm show={page === "login"} setToken={setToken} />
     </div>

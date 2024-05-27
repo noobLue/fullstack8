@@ -25,13 +25,18 @@ const BookFilter = ({ filter, setFilter, genres }) => {
   );
 };
 
-const Books = (props) => {
+const Books = ({ show, favoriteGenre }) => {
   const [filter, setFilter] = useState("");
+  const variables = {
+    genre: favoriteGenre || (filter === "" ? undefined : filter),
+  };
+
+  console.log(variables);
   const booksResult = useQuery(ALL_BOOKS, {
-    variables: { genre: filter === "" ? undefined : filter },
+    variables,
   });
 
-  if (!props.show) {
+  if (!show) {
     return null;
   }
 
@@ -42,7 +47,7 @@ const Books = (props) => {
 
   return (
     <div>
-      <h2>books</h2>
+      <h2>{favoriteGenre ? "Recommended books" : "Books"}</h2>
 
       <table>
         <tbody>
@@ -61,11 +66,13 @@ const Books = (props) => {
         </tbody>
       </table>
 
-      <BookFilter
-        filter={filter}
-        setFilter={setFilter}
-        genres={genres}
-      ></BookFilter>
+      {!favoriteGenre && (
+        <BookFilter
+          filter={filter}
+          setFilter={setFilter}
+          genres={genres}
+        ></BookFilter>
+      )}
     </div>
   );
 };

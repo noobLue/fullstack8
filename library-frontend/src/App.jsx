@@ -19,8 +19,6 @@ const App = () => {
     setToken(null);
     localStorage.clear();
     client.resetStore();
-
-    // TODO: page not refreshing properly after logging out?
   };
 
   console.log(token !== null);
@@ -32,7 +30,7 @@ const App = () => {
         <button onClick={() => setPage("books")}>books</button>
         {token && <button onClick={() => setPage("add")}>add book</button>}
         {token ? (
-          <button onClick={() => console.log("logout")}>logout</button>
+          <button onClick={logout}>logout</button>
         ) : (
           <button onClick={() => setPage("login")}>login</button>
         )}
